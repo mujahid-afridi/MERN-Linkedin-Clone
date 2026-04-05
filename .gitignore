@@ -1,0 +1,43 @@
+# =========================
+# Node.js / Backend
+# =========================
+backend/node_modules/
+backend/.env
+backend/npm-debug.log
+backend/yarn-error.log
+backend/dist/
+backend/build/
+
+# =========================
+# React / Frontend
+# =========================
+frontend/node_modules/
+frontend/.env
+frontend/build/
+frontend/npm-debug.log
+frontend/yarn-error.log
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+*.log
+
+# =========================
+# IDE / Editor files
+# =========================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# =========================
+# Miscellaneous
+# =========================
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
