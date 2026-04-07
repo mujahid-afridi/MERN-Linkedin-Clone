@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
 import { authDataContext } from "../context/AuthContext.jsx";
+import { userDataContext } from "../context/userContext.jsx";
 
 
 function Login() {
@@ -14,6 +15,7 @@ function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassowrd] = useState("")
 
+  const {userData ,setUserData} = useContext(userDataContext)
 
   const handleSignIn = async (e)=>{
       e.preventDefault()
@@ -22,7 +24,7 @@ function Login() {
           const response = await axios.post(serverURL+"/api/auth/signin", {
               email, password
           }, {withCredentials:true})
-          console.log(response)
+          setUserData(response.data)
           navigate("/")
           setError("")
           setEmail("")

@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
 import { authDataContext } from "../context/AuthContext.jsx";
+import { userDataContext } from "../context/userContext.jsx";
 
 
 function Signup(){
@@ -18,6 +19,7 @@ function Signup(){
     const [email, setEmail] = useState("")
     const [password, setPassowrd] = useState("")
 
+    const {userData ,setUserData} = useContext(userDataContext)
 
     const handleSignUp = async (e)=>{
         e.preventDefault()
@@ -26,7 +28,7 @@ function Signup(){
             const response = await axios.post(serverURL+"/api/auth/signup", {
                 firstname, lastname, username, email, password
             }, {withCredentials:true})
-            console.log(response)
+            setUserData(response.data)
             navigate("/")
             setError("")
             setFirstname("")

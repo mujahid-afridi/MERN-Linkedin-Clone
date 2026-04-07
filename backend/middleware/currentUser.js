@@ -7,7 +7,7 @@ const currentUser = (req, res, next) => {
             return res.status(400).json({message : "user does not have token!"})
         }
         let verifyToken = jwt.verify(token, process.env.SECRET_KEY)
-        req.currentUserId = verifyToken._id
+        req.currentUserId = verifyToken.userId
         next()
     }
     catch(error){
