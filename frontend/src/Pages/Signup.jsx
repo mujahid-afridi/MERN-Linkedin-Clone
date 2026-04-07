@@ -10,7 +10,6 @@ function Signup(){
     const [showPassword, setShowPassword] = useState(false)
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
-    const [isError, SetIsError] = useState(false)
     const [error, setError] = useState(false)
 
     const [firstname, setFirstname] = useState("")
@@ -28,7 +27,8 @@ function Signup(){
                 firstname, lastname, username, email, password
             }, {withCredentials:true})
             console.log(response)
-            SetIsError(false)
+            navigate("/")
+            setError("")
             setFirstname("")
             setLastname("")
             setEmail("")
@@ -36,7 +36,6 @@ function Signup(){
             setUsername("")
         }
         catch(error){
-            SetIsError(true)
             if(error.response){
                 setError(error.response.data.message)
                 console.log("Error occured in hangleSignUp method : ",error.response.data.message)
@@ -55,7 +54,7 @@ function Signup(){
 
     return (
         <div className="h-screen flex flex-col items-center">
-            <div className="w-full p-[20px]">
+            <div className="w-full lg:max-w-[1500px] p-[20px]">
                 <div className="w-[150px]">
                     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 84 21" preserveAspectRatio="xMinYMin meet" version="1.1" focusable="false" class="lazy-loaded" aria-busy="false">
                             <g class="inbug" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -74,7 +73,7 @@ function Signup(){
                 </div>
             </div>
             
-            <form action="" onSubmit={handleSignUp} className="w-[400px] max-w-[500px] bg-white md:shadow-2xl flex flex-col  gap-[10px] px-[10px] py-[30px]" >
+            <form action="" onSubmit={handleSignUp} className="w-full max-w-[550px] bg-white md:shadow-2xl flex flex-col  gap-[10px] px-[20px] py-[30px] rounded-md" >
                 <h1 className="font-semibold text-3xl mb-[20px]">SignUp</h1>
                 <input type="text" placeholder="firstname" required className=" p-[10px] border-2 border-gray-600 rounded" value={firstname} onChange={(e)=> setFirstname(e.target.value)}/>
                 <input type="text" placeholder="lastname" required className=" p-[10px] border-2 border-gray-600 rounded" value={lastname} onChange={(e)=> setLastname(e.target.value)} />
@@ -84,7 +83,7 @@ function Signup(){
                     <input type={showPassword ? "text" : "password"} placeholder="password" required className="border-none outline-none w-full" value={password} onChange={(e)=> setPassowrd(e.target.value)} />
                     <p onClick={()=> setShowPassword(!showPassword)} className="cursor-pointer text-blue-500">{showPassword? "hidden" : "show"}</p>
                 </div>
-                <p className="text-red-800">{isError? error : ""}</p>
+                {error && <p className="text-red-900 text-center">*{error}</p>}
                 <button className=" p-[10px] bg-blue-500 rounded-xl text-white" disabled={loading}>{loading ? "Loading..." : "SignUp"}</button>
                 <p className="w-full text-center">Already have an account? <span className="text-blue-500 cursor-pointer" onClick={()=> navigate('/login')}>SignIn</span></p>
             </form>

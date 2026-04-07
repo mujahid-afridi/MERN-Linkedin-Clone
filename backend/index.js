@@ -4,6 +4,7 @@ import connectDB from "./config/db.js"
 import authRouter from "./routers/auth.routes.js"
 import cookieParser from "cookie-parser"
 import cors from "cors"
+import currentUserRouter from "./routers/currentUser.routes.js"
 
 
 
@@ -21,6 +22,7 @@ app.get("/", (req, res)=>{
 })
 
 app.use("/api/auth", authRouter)
+app.use("/api/user", currentUserRouter)
 
 
 
