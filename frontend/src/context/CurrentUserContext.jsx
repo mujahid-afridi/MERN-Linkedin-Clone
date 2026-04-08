@@ -12,12 +12,12 @@ export let userDataContext = createContext()
 function UserContext({children}) {
     let [userData, setUserData] = useState(null)
     let {serverURL} = useContext(authDataContext)
+    let [editUser, setEditUser] = useState(false)
 
     const getCurrentUser = async ()=>{
         try{
             let result = await axios.get(serverURL+"/api/user/currentuser", {withCredentials : true})
             setUserData(result.data)
-            console.log(result)
         }
         catch(error){
             console.log("getCurrentUser error" , error)
@@ -31,7 +31,7 @@ function UserContext({children}) {
 
 
     let value = {
-        userData, setUserData
+        userData, setUserData, editUser, setEditUser
     }
   return (
     <userDataContext.Provider value={value}>

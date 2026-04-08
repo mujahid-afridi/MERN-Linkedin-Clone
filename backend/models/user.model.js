@@ -44,7 +44,8 @@ const userSchema = new mongoose.Schema({
         }
     ],
     location : {
-        type : String
+        type : String,
+        default : "Pakistan"
     },
     gender : {
         type : String,

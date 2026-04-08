@@ -4,7 +4,7 @@ import Home from './Pages/Home.jsx'
 import Signup from './Pages/Signup.jsx'
 import Login from './Pages/Login.jsx'
 import { useContext } from 'react'
-import { userDataContext } from './context/userContext.jsx'
+import { userDataContext } from "./context/CurrentUserContext.jsx"
 
 
 function App() {
