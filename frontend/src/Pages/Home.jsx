@@ -42,8 +42,8 @@ function Home() {
       </div>
 
 
-      <div className='w-full lg:w-[50%] bg-white rounded'>regr</div>
-      <div className='w-full lg:w-[25%] bg-white rounded'>eegt</div>
+      <div className='w-full lg:w-[50%] bg-white rounded h-[500px]'>regr</div>
+      <div className='w-full lg:w-[25%] bg-white rounded h-[300px]'>eegt</div>
     </div>
   </div>
 }

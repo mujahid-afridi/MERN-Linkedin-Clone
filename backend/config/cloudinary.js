@@ -1,4 +1,4 @@
-import {vs as cloudinary} from "cloudinary"
+import {v2 as cloudinary} from "cloudinary"
 import fs from 'fs'
 
 
@@ -15,6 +15,7 @@ const uploadOnCloudinary = async (filePath)=>{
         }
         let uploadResult = await cloudinary.uploader.upload(filePath)
         fs.unlink(filePath)
+        console.log("images are uploaded successfully on cloudinary")
         return uploadResult.secure_url
     }
     catch(error){

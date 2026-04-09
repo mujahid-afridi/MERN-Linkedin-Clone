@@ -16,7 +16,7 @@ function Navbar() {
 
 
   return (
-   <div className='w-full bg-white fixed top-0 left-0 h-13 shadow-lg flex justify-center items-center px-[5px]'>
+   <div className='w-full bg-white fixed top-0 left-0 z-10 h-13 shadow-lg flex justify-center items-center px-[5px]'>
      <div className='w-full md:max-w-[1600px] flex justify-between sm:justify-around items-center'>
         <div className='flex justify-between gap-[5px] items-center'>
           <div className='w-10 h-10 cursor-pointer'>
