@@ -14,8 +14,7 @@ const uploadOnCloudinary = async (filePath)=>{
             return null
         }
         let uploadResult = await cloudinary.uploader.upload(filePath)
-        fs.unlink(filePath)
-        console.log("images are uploaded successfully on cloudinary")
+        fs.unlinkSync(filePath)
         return uploadResult.secure_url
     }
     catch(error){

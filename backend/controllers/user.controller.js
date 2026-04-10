@@ -1,4 +1,5 @@
 import User from "../models/user.model.js"
+import uploadOnCloudinary from "../config/cloudinary.js"
 
 export const getCurrentUser = async (req, res)=>{
     try{
@@ -14,7 +15,7 @@ export const getCurrentUser = async (req, res)=>{
     }
 }
 
-export const updateCurrentUser = async(req, res)=>{
+export const updateUserProfile = async(req, res)=>{
     try{
         let {firstname, lastname, username, location, headline, gender} = req.body
         let skills = JSON.parse(req.body?.skills || "[]")
@@ -31,7 +32,7 @@ export const updateCurrentUser = async(req, res)=>{
 
         let updatedUser =  await User.findByIdAndUpdate(req.currentUserId, {firstname, lastname, username, location,
              headline, skills, education, experience, gender, profileImage, coverImage}, {
-                new : true,
+                returnDocument : 'after',
                 runValidators : true
              }).select("-password")
 

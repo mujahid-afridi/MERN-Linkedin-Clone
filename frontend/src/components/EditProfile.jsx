@@ -11,13 +11,14 @@ import { useNavigate } from 'react-router-dom';
 function EditProfile() {
     let {userData, setUserData, editUser, setEditUser} = useContext(userDataContext)
     let {serverURL} = useContext(authDataContext)
-    let navigate = useNavigate("")
+    let navigate = useNavigate()
     let profileImageRef = useRef(userData.profileImage || profileImg)
     let coverImageRef = useRef(userData.coverImage || null)
     let [frontendProfileImage, setFrontendProfileImage] = useState(userData.profileImage || null)
     let [backendProfileImage, setBackendProfileImage] = useState(null)
     let [frontendCoverImage, setFrontendCoverImage] = useState(userData.coverImage || null)
     let [backendCoverImage, setBackendCoverImage] = useState(null)
+    let [loading, setLoading] = useState(false)
 
     let [firstname, setFirstName] = useState(userData.firstname || "")
     let [lastname, setLastName] = useState(userData.lastname || "")
@@ -129,12 +130,13 @@ function EditProfile() {
     }
     let handleUpdateCurrentUser = async ()=>{
         try{
+            setLoading(true)
             let formdata = new FormData()
             formdata.append("firstname", firstname)
             formdata.append("lastname", lastname)
             formdata.append("username", username)
             formdata.append("location", location)
-            formdata.append("skills", JSON.stringify(skills) )
+            formdata.append("skills", JSON.stringify(skills)  )
             formdata.append("experience", JSON.stringify(experience))
             formdata.append("education", JSON.stringify(education))
             formdata.append("headline", headline)
@@ -147,11 +149,13 @@ function EditProfile() {
             }
 
             let result =  await axios.put(serverURL+"/api/user/updatecurrentuser", formdata, {withCredentials:true})
-            // setUserData(result.data.user)
-            // navigate('/')
-            console.log( "update user profile = ",result)
+            setUserData(result.data)
+            setLoading(false)
+            setEditUser(false)
+            navigate('/')
         }
         catch(error){
+            setLoading(false)
             console.log("Error in handleUpdateCurrentUser = ", error)
         }
     }
@@ -277,7 +281,7 @@ function EditProfile() {
                     <button type='button' className='w-full text-center border-1 border-blue-400 rounded-lg cursor-pointer' onClick={addExperience}>Add</button>
                 </div>
                 <div className='flex justify-end'>
-                    <button type='button' className='bg-blue-400 border-1 px-5 py-a rounded-lg text-white broder-blue-400 cursor-pointer font-semibold' onClick={handleUpdateCurrentUser}>Save</button>
+                    <button type='button' disabled={loading} className={`${loading ? "bg-blue-300" : "bg-blue-400"}  border-1 px-5 py-a rounded-lg text-white broder-blue-400 cursor-pointer font-semibold`} onClick={handleUpdateCurrentUser}>{loading ? "Saving...": "Save"}</button>
                 </div>
             </form>
         </div>

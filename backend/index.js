@@ -5,6 +5,7 @@ import authRouter from "./routers/auth.routes.js"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import currentUserRouter from "./routers/currentUser.routes.js"
+import { postRouter } from "./routers/post.routes.js"
 
 
 
@@ -23,6 +24,7 @@ app.get("/", (req, res)=>{
 
 app.use("/api/auth", authRouter)
 app.use("/api/user", currentUserRouter)
+app.use("/api/post", postRouter)
 
 
 

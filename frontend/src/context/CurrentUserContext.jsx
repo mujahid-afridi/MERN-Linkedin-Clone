@@ -13,6 +13,7 @@ function UserContext({children}) {
     let [userData, setUserData] = useState(null)
     let {serverURL} = useContext(authDataContext)
     let [editUser, setEditUser] = useState(false)
+    let [postPopup, setPostPopup] = useState(false)
 
     const getCurrentUser = async ()=>{
         try{
@@ -31,7 +32,7 @@ function UserContext({children}) {
 
 
     let value = {
-        userData, setUserData, editUser, setEditUser
+        userData, setUserData, editUser, setEditUser, postPopup, setPostPopup
     }
   return (
     <userDataContext.Provider value={value}>

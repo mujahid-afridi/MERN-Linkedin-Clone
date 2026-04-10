@@ -25,7 +25,7 @@ function ProfilePopup() {
         }
     }
 
-  return <div className='p-[10px] flex flex-col justify-center gap-[10px] w-[200px] min-h-[250px] bg-white absolute top-[50px] right-0  rounded-lg'>
+  return <div className='p-[10px] flex flex-col justify-center gap-[10px] w-[200px] min-h-[250px] bg-white absolute top-[50px] right-0  rounded-lg shadow-lg'>
     <div className='flex flex-col justify-center gap-[10px]'>
         <div className='rounded-full  flex justify-center items-center cursor-pointer'>
             <img src={userData.profileImage? userData.profileImage : profileImg} alt='profile image' className='h-[40px] w-[40px] rounded-full'/>

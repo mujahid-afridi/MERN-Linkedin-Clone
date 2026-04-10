@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import logo2 from "../assets/logo2.png"
 import { IoSearchSharp } from "react-icons/io5";
 import { AiFillHome } from "react-icons/ai";
@@ -7,8 +7,11 @@ import { IoNotifications } from "react-icons/io5";
 import profileImg from "../assets/profileImg.webp"
 import { useState } from 'react';
 import ProfilePopup from './ProfilePopup.jsx';
+import { userDataContext } from '../context/CurrentUserContext.jsx';
 
 function Navbar() {
+  let {userData, editUserData} = useContext(userDataContext)
+
   const [activeSearch, setActiveSearch] = useState(false)
   const [showProfilePopup, setShowProfilePopup] = useState(false)
 
@@ -46,7 +49,7 @@ function Navbar() {
             <div className='hidden sm:flex text-sm text-gray-800'>Notification</div>
           </div>
           <div className='rounded-full bg-blue-300 flex justify-center items-center cursor-pointer' onClick={()=> setShowProfilePopup(!showProfilePopup)}>
-            <img src={profileImg} alt='profile image' className='h-[40px] w-[40px] rounded-full'/>
+            <img src={userData.profileImage ||  profileImg} alt='profile image' className='h-[40px] w-[40px] rounded-full'/>
           </div>
           {showProfilePopup && <ProfilePopup />}
         </div>
