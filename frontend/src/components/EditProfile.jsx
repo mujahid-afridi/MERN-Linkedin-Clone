@@ -9,7 +9,7 @@ import { authDataContext } from '../context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 
 function EditProfile() {
-    let {userData, setUserData, editUser, setEditUser} = useContext(userDataContext)
+    let {userData, setUserData, editUser, setEditUser, loading, setLoading} = useContext(userDataContext)
     let {serverURL} = useContext(authDataContext)
     let navigate = useNavigate()
     let profileImageRef = useRef(userData.profileImage || profileImg)
@@ -18,7 +18,6 @@ function EditProfile() {
     let [backendProfileImage, setBackendProfileImage] = useState(null)
     let [frontendCoverImage, setFrontendCoverImage] = useState(userData.coverImage || null)
     let [backendCoverImage, setBackendCoverImage] = useState(null)
-    let [loading, setLoading] = useState(false)
 
     let [firstname, setFirstName] = useState(userData.firstname || "")
     let [lastname, setLastName] = useState(userData.lastname || "")

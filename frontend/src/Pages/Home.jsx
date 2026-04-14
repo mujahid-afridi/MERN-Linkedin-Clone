@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState , useEffect} from 'react'
 import Navbar from '../components/Navbar'
 import { userDataContext } from "../context/CurrentUserContext.jsx"
 import { IoIosCamera } from "react-icons/io";
@@ -7,15 +7,21 @@ import { FaPlus } from "react-icons/fa6";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import EditProfile from '../components/EditProfile.jsx';
 import CreatePostPopup from '../components/CreatePostPopup.jsx';
+import Posts from '../components/Posts.jsx';
 
 
 function Home() {
-  let {userData, setUserData, editUser, setEditUser, postPopup, setPostPopup} = useContext(userDataContext)
+  let {userData, setUserData, editUser, setEditUser, postPopup, setPostPopup, posts, setPosts, getAllPosts} = useContext(userDataContext)
+
+
+  useEffect(()=>{
+    getAllPosts()
+  }, [])
 
   return <div className='h-screen bg-gray-200 flex justify-center' >
     <Navbar />
     {editUser && <EditProfile />}
-    <div className='flex flex-col lg:flex-row  gap-[10px] px-[10px] pt-[70px] w-full lg:max-w-[1440px] '>
+    <div className='flex flex-col lg:flex-row  gap-[10px] px-[10px] pt-[70px] w-full lg:max-w-[1440px] h-screen'>
       {/* //left part of home */}
       <div className='w-full lg:w-[25%] bg-white rounded p-[10px] relative'>
         <div className='bg-gray-400 h-[110px] rounded cursor-pointer' >
@@ -47,7 +53,7 @@ function Home() {
 
       {/* //main part of home */}
       {postPopup && <CreatePostPopup />}
-      <div className='w-full flex flex-col gap-[20px] lg:w-[50%]  rounded h-full overflow-auto '>
+      <div className='w-full flex flex-col gap-[20px] lg:w-[50%]  rounded h-full overflow-y-auto'>
         
         <div className='flex items-center justify-center gap-4 bg-white p-4 rounded'>
           <div className='rounded-full  flex justify-center items-center cursor-pointer'>
@@ -58,11 +64,13 @@ function Home() {
           </div>
         </div>
 
+        {posts && posts.map((post, i)=>{
+          return <Posts index={i} post={post} />
+        })}
 
       </div>
-      <div className='w-full lg:w-[25%] bg-white rounded h-[300px]'>eegt</div>
+      <div className='w-full lg:w-[25%] bg-white rounded h-[300px]'></div>
     </div>
-
   </div>
 }
 

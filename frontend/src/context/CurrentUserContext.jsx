@@ -14,6 +14,8 @@ function UserContext({children}) {
     let {serverURL} = useContext(authDataContext)
     let [editUser, setEditUser] = useState(false)
     let [postPopup, setPostPopup] = useState(false)
+    let [loading, setLoading] = useState(false)
+    let [posts, setPosts] = useState([])
 
     const getCurrentUser = async ()=>{
         try{
@@ -26,13 +28,28 @@ function UserContext({children}) {
         }
     }
 
+    const getAllPosts = async()=>{
+        try{
+            let result = await axios.get(serverURL+"/api/post/getallposts",{withCredentials:true})
+            console.log("result of getallposts = ", result)
+            setPosts(result.data)
+        }
+        catch(error){
+            setPosts([])
+            console.log(error)
+        }
+    }
+
     useEffect(()=>{
-        getCurrentUser()
+        getCurrentUser(),
+        getAllPosts()
     }, [])
 
 
     let value = {
-        userData, setUserData, editUser, setEditUser, postPopup, setPostPopup
+        userData, setUserData, editUser, setEditUser, postPopup, setPostPopup, loading, setLoading, posts,setPosts,
+        getAllPosts
+
     }
   return (
     <userDataContext.Provider value={value}>
