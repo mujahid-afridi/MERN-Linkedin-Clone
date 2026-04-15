@@ -11,6 +11,9 @@ import { useEffect } from 'react';
 import { BiSolidLike } from "react-icons/bi";
 import { IoSend } from "react-icons/io5";
 import { useRef } from 'react';
+import {io, Socket} from 'socket.io-client'
+
+const socket = io("http://localhost:9000")
 
 function Posts({index, post}) {
 
@@ -22,6 +25,7 @@ function Posts({index, post}) {
     let textareaRef = useRef()
     let [isComment, setIsComment] = useState(false)
     let [message, setMessage] = useState("")
+    let [likes, setLikes] = useState(0)
 
     let [skip, setSkip] = useState(0)
     let limit=3 // it's size should fix
@@ -35,6 +39,7 @@ function Posts({index, post}) {
             setPosts((prevposts)=>{
                 return prevposts.map((p)=> p._id === post._id ? result.data : p)
             })
+            setLikes(result.data?.likes.length)
         }
         catch(error){
             console.log(error)
@@ -82,6 +87,30 @@ function Posts({index, post}) {
         }
     }
 
+
+    useEffect(()=>{
+        getComments(0)
+        setLikes(post.likes.length)
+
+        socket.on("likeUpdated", ({postId, likes})=>{
+            console.log("likes = ", likes)
+            if(postId == post._id){
+                setLikes(likes.length)
+            }
+        })
+
+        socket.on("commentUpdated", ({postId, comments})=>{
+            if(postId == post._id){
+                setTotalComments(comments.length)
+            }
+        })
+
+        return ()=>{
+            socket.off("likeUpdated")
+            socket.off("commentUpdated")
+        }
+    }, [post._id])
+
   return <div key={index}  className='w-full p-4 rounded-md bg-white flex flex-col'>
     <div className='flex justify-between items-center gap-[10px'>
         <div className='flex gap-2 items-start'>
@@ -120,10 +149,11 @@ function Posts({index, post}) {
     <div className='flex justify-between itmes-center mt-[5px]'>
         <div className='flex gap-[8px] items-center'>
             <AiOutlineLike className='text-blue-600'  />
-            <div>{post.likes.length}</div>
+            <div>{likes}</div>
         </div>
         <div className='flex gap-[8px] items-center'>
-            <div>{post.comments.length}</div>
+            {/* <div>{post.comments.length}</div> */}
+            <div>{totalComments}</div>
             <div>commnets</div>
         </div>
     </div>

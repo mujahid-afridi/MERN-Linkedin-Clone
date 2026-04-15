@@ -1,4 +1,5 @@
 import uploadOnCloudinary from "../config/cloudinary.js"
+import { io } from "../index.js"
 import Post from "../models/post.model.js"
 
 
@@ -81,6 +82,9 @@ export const like = async(req, res)=>{
             post.likes.push(userId)
         }
         await post.save()
+
+        io.emit("likeUpdated", {postId, likes:post.likes})
+
         const updatedPost = await Post.findById(post._id).populate("author","firstname lastname username profileImage headline")
 
         return res.status(200).json(updatedPost)
@@ -141,9 +145,6 @@ export const getComments = async(req, res)=>{
         let postId = req.params.id
         let {skip, limit} = req.query
 
-        console.log("getCommetns controller called")
-        console.log("post id = ", postId)
-
         let post = await Post.findById(postId)
             .populate("comments.user", "firstname lastname username profileImage headline")
 
@@ -157,6 +158,8 @@ export const getComments = async(req, res)=>{
                 totalComments: post.comments?.length
             })
         }
+
+        io.emit("commentUpdated", {postId, comments : post.comments})
 
         let sortedComments = post.comments?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
