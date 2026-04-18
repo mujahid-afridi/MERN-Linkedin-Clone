@@ -5,6 +5,7 @@ import { createContext } from 'react'
 import { authDataContext } from './AuthContext'
 import axios from 'axios'
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export let userDataContext = createContext()
 
@@ -16,11 +17,14 @@ function UserContext({children}) {
     let [postPopup, setPostPopup] = useState(false)
     let [loading, setLoading] = useState(false)
     let [posts, setPosts] = useState([])
+    let [profileData, setProfileData] = useState({})
+    let navigate = useNavigate("")
 
     const getCurrentUser = async ()=>{
         try{
             let result = await axios.get(serverURL+"/api/user/currentuser", {withCredentials : true})
             setUserData(result.data)
+            console.log("userdata = ", result.data)
         }
         catch(error){
             console.log("getCurrentUser error" , error)
@@ -31,11 +35,22 @@ function UserContext({children}) {
     const getAllPosts = async()=>{
         try{
             let result = await axios.get(serverURL+"/api/post/getallposts",{withCredentials:true})
-            console.log("result of getallposts = ", result)
             setPosts(result.data)
+            console.log("all posts = ",result.data)
         }
         catch(error){
             setPosts([])
+            console.log(error)
+        }
+    }
+
+    let handleGetUserProfile = async(id)=>{
+        try{
+            let result = await axios.get(serverURL+`/api/user/profile/${id}`, {withCredentials:true})
+            setProfileData(result.data)
+            navigate("/profile")
+        }
+        catch(error){
             console.log(error)
         }
     }
@@ -48,7 +63,7 @@ function UserContext({children}) {
 
     let value = {
         userData, setUserData, editUser, setEditUser, postPopup, setPostPopup, loading, setLoading, posts,setPosts,
-        getAllPosts
+        getAllPosts, handleGetUserProfile, profileData, setProfileData
 
     }
   return (

@@ -43,3 +43,25 @@ export const updateUserProfile = async(req, res)=>{
         return res.status(500).json({message : "Update profiel error"})
     }
 }
+
+
+
+export const getUserProfile = async(req, res)=>{
+    try{
+        const userId = req.params.id
+        let user = await User.findById(userId)
+            .select("-password")
+            .populate("connections", "firstname lastname headline username email profileImage coverImage")
+
+        if(!user){
+            return res.status(400).json({message : "user does not exist"})
+        }
+
+        return res.status(200).json(user)
+
+    }
+    catch(error){
+        console.log("getUserProfile error = ",error)
+        return res.status(500).json({message : "server error"})
+    }
+}

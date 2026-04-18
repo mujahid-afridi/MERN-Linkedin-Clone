@@ -12,13 +12,16 @@ import { BiSolidLike } from "react-icons/bi";
 import { IoSend } from "react-icons/io5";
 import { useRef } from 'react';
 import {io, Socket} from 'socket.io-client'
+import ConnectionBtn from './ConnectionBtn.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const socket = io("http://localhost:9000")
 
 function Posts({index, post}) {
 
     let {serverURL} = useContext(authDataContext)
-    let {userData, posts, setPosts, getAllPosts} = useContext(userDataContext)
+    let {userData, posts, setPosts, getAllPosts, handleGetUserProfile, profileData, setProfileData} = useContext(userDataContext)
+    let navigate = useNavigate("")
 
     let [readMore, setReadMore] = useState(false)
 
@@ -87,7 +90,6 @@ function Posts({index, post}) {
         }
     }
 
-
     useEffect(()=>{
         getComments(0)
         setLikes(post.likes.length)
@@ -112,9 +114,16 @@ function Posts({index, post}) {
     }, [post._id])
 
   return <div key={index}  className='w-full p-4 rounded-md bg-white flex flex-col'>
-    <div className='flex justify-between items-center gap-[10px'>
+    <div className='flex flex-wrap justify-between items-center gap-[10px'>
         <div className='flex gap-2 items-start'>
-            <div className='rounded-full  flex justify-center items-center cursor-pointer'>
+            <div className='rounded-full  flex justify-center items-center cursor-pointer' onClick={()=>{ 
+                if(post.author._id !== userData._id){
+                    handleGetUserProfile(post.author._id)
+                }else{
+                    setProfileData(null)
+                    navigate("/profile")
+                }
+            }}>
                 <img src={post?.author?.profileImage ? post?.author?.profileImage : profileImg} alt='profile image' className='h-[50px] w-[50px] rounded-full'/>
             </div>
             <div >
@@ -123,9 +132,7 @@ function Posts({index, post}) {
                 <div className=' text-gray-600 text-[14px]'>{moment(post.createdAt).fromNow()}</div>
             </div>
         </div>
-        <div>
-            <button className='border-2 border-blue-400 text-blue-400 text-center px-[15px] py-[5px] rounded-full cursor-pointer'>connect</button>
-        </div>
+        {userData._id !== post.author?._id && <ConnectionBtn userId={post.author?._id} customeStyle={""} />}
     </div>
     <div className=' w-full mt-[10px]'>
         {!readMore ? (post.description.length < 100) ? post.description : post.description.split(" ").slice(0,15).join(" ")+"..." :  post.description}

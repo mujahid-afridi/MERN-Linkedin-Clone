@@ -19,9 +19,9 @@ export const sendConnection = async(req, res)=>{
         }
 
         let existConnection =  await Connection.findOne({
-            sender : user,
+            sender : req.currentUserId,
             reciever : id,
-            status : "pendeing"
+            status : "pending"
         })
 
         if(existConnection){
@@ -29,28 +29,30 @@ export const sendConnection = async(req, res)=>{
         }
 
         let newConnection =  await Connection.create({
-            sender : user,
+            sender : req.currentUserId,
             reciever : id
         })
 
         let recieverSocketId = userSocketMap.get(id)
-        let senderSocketId = userSocketMap.get(newConnection.sender)
+        let senderSocketId = userSocketMap.get(req.currentUserId)
         if(recieverSocketId){
-            io.to(recieverSocketId).emit("statusUpdated", {updateUserId : newConnection.sender, newStatus:"received"})
+            io.to(recieverSocketId).emit("statusUpdate", {updatedUserId : req.currentUserId, newStatus : "received"})
         }
         if(senderSocketId){
-            io.to(senderSocketId).emit("statusUpdated", {updateUserId : id, newStatus:"pending"})
+            io.to(senderSocketId).emit("statusUpdate", {updatedUserId : id, newStatus : "pending"})
         }
 
-        return res.status(201).json(newConnection)
 
-        
+
+        return res.status(201).json(newConnection)
     }
     catch(error){
         console.log(error)
         return res.status(500).json({message : `send connection error : ${error}`})
     }
 }
+
+
 
 
 export const getConnection = async (req, res)=>{
@@ -68,15 +70,27 @@ export const getConnection = async (req, res)=>{
 
         connection.status = "accepted"
         await connection.save()
-        await User.findByIdAndUpdate(req.currentUserId, {
-            $addToSet : {connections : connection.sender._id}
-        })
-        await User.findByIdAndUpdate(connection.sender._id, {
-            $addToSet : {connections : req.currentUserId}
-        })
+
+        let updatedReciever = await User.findByIdAndUpdate(req.currentUserId, {
+            $addToSet : {connections : connection.sender._id}},
+            {new : true}
+        ).populate("connections", "firstname lastname headline username profileImage")
+        let updatedSender =  await User.findByIdAndUpdate(connection.sender._id, {
+            $addToSet : {connections : req.currentUserId}},
+            {new : true}
+        ).populate("connections", "firstname lastname headline username profileImage")
 
 
-
+        let recieverSocketId = userSocketMap.get(connection.reciever.toString())
+        let senderSocketId = userSocketMap.get(connection.sender.toString())
+        if(recieverSocketId){
+            io.to(recieverSocketId).emit("statusUpdate", {updatedUserId:connection.sender._id, newStatus : "disconnect"})
+            io.to(recieverSocketId).emit("connectionUpdate", {connections : updatedReciever.connections})
+        }
+        if(senderSocketId){
+            io.to(senderSocketId).emit("statusUpdate", {updatedUserId:req.currentUserId, newStatus : "disconnect"})
+            io.to(senderSocketId).emit("connectionUpdate", {connections : updatedSender.connections})
+        }
 
         return res.status(200).json({message : "connection accepted"})
 
@@ -85,6 +99,10 @@ export const getConnection = async (req, res)=>{
         return res.status(500).json({message : "connection accepted error"})
     }
 }
+
+
+
+
 
 export const rejectConnection = async(req, res)=>{
     try{
@@ -96,15 +114,25 @@ export const rejectConnection = async(req, res)=>{
         if(connection.status != "pending"){
             return res.status(400).json({message : "request under process"})
         }
-        connection.status = "rejected"
-        await connection.save()
-        return res.status(200).json({message : "connection rejected"})
 
+        await Connection.findByIdAndDelete(connectionId)
+
+        let recieverSocketId = userSocketMap.get(req.currentUserId)
+        let senderSocketId = userSocketMap.get(connection.sender.toString())
+        if(recieverSocketId){
+            io.to(recieverSocketId).emit("statusUpdate", {updatedUserId:connection.sender._id, newStatus:"connect"})
+        }
+        if(senderSocketId){
+            io.to(senderSocketId).emit("statusUpdate", {updatedUserId:req.currentUserId, newStatus : "connect"})
+        }
+
+        return res.status(200).json({message : "connection rejected"})
     }
     catch(error){
         return res.status(500).json({message : "connection accepted error"})
     }
 }
+
 
 
 
@@ -118,7 +146,6 @@ export const getConnectionStatus = async (req, res)=>{
         if(currentUser.connections.includes(targetUserId)){
             return res.json({status : "disconnect"})
         }
-
         const pendingRequest = await Connection.findOne({
             $or : [
                 {sender : currentUserId, reciever : targetUserId},
@@ -134,6 +161,7 @@ export const getConnectionStatus = async (req, res)=>{
             }
 
         }
+
         return res.json({status : "connect"})
     }
     catch(error){
@@ -142,17 +170,32 @@ export const getConnectionStatus = async (req, res)=>{
 }
 
 
+
+
 export const removeConnection = async (req, res)=>{
     try{
         const myId = req.currentUserId
         const otherUserId = req.params.userId
 
-        await User.findByIdAndUpdate(myId, {
-            $pull : {connections : myId}
-        })
-        await User.findByIdAndUpdate(otherUserId, {
-            $pull : {connections : myId}
-        })
+        let updatedCurrentUser =  await User.findByIdAndUpdate(myId, 
+            {$pull : {connections : otherUserId}},
+            {new: true}
+        ).populate("connections", "firstname lastname headline username profileImage")
+        let updatedOtherUser = await User.findByIdAndUpdate(otherUserId, 
+            {$pull : {connections : myId}},
+            {new: true}
+        ).populate("connections", "firstname lastname headline username profileImage")
+
+        let recieverSocketId  = userSocketMap.get(otherUserId.toString())
+        let senderSocketId  = userSocketMap.get(myId.toString())
+        if(recieverSocketId){
+            io.to(recieverSocketId).emit("statusUpdate", {updatedUserId: myId, newStatus:"connect"})
+            io.to(recieverSocketId).emit("connectionUpdate", {connections : updatedOtherUser.connections})
+        }
+        if(senderSocketId){
+            io.to(senderSocketId).emit("statusUpdate", {updatedUserId:otherUserId, newStatus:"connect"})
+            io.to(senderSocketId).emit("connectionUpdate", {connections : updatedCurrentUser.connections})
+        }
 
         return res.status(200).json({message : "connection removed successfully"})
     }
@@ -164,6 +207,8 @@ export const removeConnection = async (req, res)=>{
 
 
 
+
+//fetch all pending requests 
 export const getConnectionRequests = async(req, res)=>{
     try{
         let requests = await Connection.find({
@@ -181,11 +226,14 @@ export const getConnectionRequests = async(req, res)=>{
 
 
 
+
+
 export const getUserConnections = async(req, res)=>{
     try{
-        const user = await User.findById(req.currentUserId)
+        let {userId} = req.params
+        const user = await User.findById(userId)
             .populate("connections", "firstname lastname username headline profileImage connections")
-
+        
         return res.status(200).json(user.connections)
     }
     catch(error){

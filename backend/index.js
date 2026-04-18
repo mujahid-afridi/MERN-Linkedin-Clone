@@ -40,6 +40,7 @@ io.on("connection", (socket)=>{
 
     socket.on("register", (userId)=>{
         userSocketMap.set(userId, socket.id)
+        console.log("userSocketMap = ", userSocketMap)
     })
 
     socket.on("disconnect", ()=>{

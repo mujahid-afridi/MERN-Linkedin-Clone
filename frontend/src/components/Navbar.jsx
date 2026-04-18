@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useRef } from 'react'
 import logo2 from "../assets/logo2.png"
 import { IoSearchSharp } from "react-icons/io5";
 import { AiFillHome } from "react-icons/ai";
@@ -8,19 +8,36 @@ import profileImg from "../assets/profileImg.webp"
 import { useState } from 'react';
 import ProfilePopup from './ProfilePopup.jsx';
 import { userDataContext } from '../context/CurrentUserContext.jsx';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 function Navbar() {
   let {userData, editUserData} = useContext(userDataContext)
 
   const [activeSearch, setActiveSearch] = useState(false)
   const [showProfilePopup, setShowProfilePopup] = useState(false)
+  let navigate = useNavigate("")
 
+  const popupRef = useRef(null)
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setShowProfilePopup(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
 
   return (
    <div className='w-full bg-white fixed top-0 left-0 z-10 h-13 shadow-lg flex justify-center items-center px-[5px]'>
-     <div className='w-full md:max-w-[1600px] flex justify-between sm:justify-around items-center'>
+     <div className='w-full max-w-[2000px] flex justify-between sm:justify-around items-center'>
         <div className='flex justify-between gap-[5px] items-center'>
           <div className='w-10 h-10 cursor-pointer'>
             <img src={logo2}/>
@@ -36,11 +53,11 @@ function Navbar() {
           </form>
         </div>
         <div className='flex gap-[15px] items-center relative'>
-          <div className='hidden lg:flex flex-col items-center cursor-pointer'>
+          <div className='hidden lg:flex flex-col items-center cursor-pointer' onClick={()=>  navigate("/")}>
             <div><AiFillHome className='h-[20px] w-[20px]'/></div>
             <div className='text-sm text-gray-800'>Home</div>
           </div>
-          <div className='hidden lg:flex flex-col items-center cursor-pointer'>
+          <div className='hidden lg:flex flex-col items-center cursor-pointer' onClick={()=> navigate("/network")}>
             <div><IoMdPeople className='h-[20px] w-[20px]'/></div>
             <div className='text-sm text-gray-800'>My Network</div>
           </div>
@@ -48,10 +65,12 @@ function Navbar() {
             <div><IoNotifications className='h-[20px] w-[20px]'/></div>
             <div className='hidden sm:flex text-sm text-gray-800'>Notification</div>
           </div>
-          <div className='rounded-full bg-blue-300 flex justify-center items-center cursor-pointer' onClick={()=> setShowProfilePopup(!showProfilePopup)}>
-            <img src={userData.profileImage ||  profileImg} alt='profile image' className='h-[40px] w-[40px] rounded-full'/>
+          <div ref={popupRef}>
+            <div className='rounded-full bg-blue-300 flex justify-center items-center cursor-pointer' onClick={()=> setShowProfilePopup(!showProfilePopup)}>
+              <img src={userData.profileImage ||  profileImg} alt='profile image' className='h-[40px] w-[40px] rounded-full'/>
+            </div>
+            {showProfilePopup && <ProfilePopup />}
           </div>
-          {showProfilePopup && <ProfilePopup />}
         </div>
     </div>
    </div>
