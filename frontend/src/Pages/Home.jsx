@@ -8,24 +8,40 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 import EditProfile from '../components/EditProfile.jsx';
 import CreatePostPopup from '../components/CreatePostPopup.jsx';
 import Posts from '../components/Posts.jsx';
+import { authDataContext } from '../context/AuthContext.jsx';
+import axios from 'axios';
+import ConnectionBtn from '../components/ConnectionBtn.jsx';
 
 
 function Home() {
-  let {userData, setUserData, editUser, setEditUser, postPopup, setPostPopup, posts, setPosts, getAllPosts} = useContext(userDataContext)
+  const {serverURL} = useContext(authDataContext)
+  let {userData, setUserData, editUser, setEditUser, postPopup, setPostPopup, posts, setPosts, getAllPosts, handleGetUserProfile} = useContext(userDataContext)
+  let [suggestedUsers, setSuggestedUsers] = useState([])
 
+  let handleSuggestedUsers = async()=>{
+    try{
+      let result  = await axios.get(serverURL+`/api/user/suggestedusers`, {withCredentials:true})
+      console.log("suggestedusers = ", result.data)
+      setSuggestedUsers(result.data)
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
 
   useEffect(()=>{
     getAllPosts()
-  }, [])
+    handleSuggestedUsers()
+  }, [userData])
 
-  return <div className='h-screen bg-gray-200 flex justify-center' >
+  return <div className='min-h-screen bg-gray-200 flex justify-center' >
     <Navbar />
     {editUser && <EditProfile />}
-    <div className='flex flex-col lg:flex-row  gap-[10px] px-[10px] pt-[70px] w-full lg:max-w-[1440px] h-screen'>
+    <div className='flex flex-col lg:flex-row  gap-[10px] px-[10px] pt-[70px] w-full lg:max-w-[1440px] overflow-auto'>
       {/* //left part of home */}
       <div className='w-full lg:w-[25%] bg-white rounded p-[10px] relative'>
-        <div className='bg-gray-400 h-[110px] rounded cursor-pointer' >
-          {userData?.coverImage && <img src={userData.coverImage} alt="cover image"  className='w-[100%] h-[100%]'/>}
+        <div className='bg-gray-400 h-[110px] rounded-lg cursor-pointer' >
+          {userData?.coverImage && <img src={userData.coverImage} alt="cover image"  className='w-[100%] h-[100%] rounded-lg'/>}
           <IoIosCamera className='h-[25px] w-[25px] absolute top-3 right-4 text-white' />
         </div>
         <div className='rounded-full bg-blue-200 h-[50px] w-[50px]  flex justify-center items-center cursor-pointer  absolute top-[90px] left-6'>
@@ -38,7 +54,7 @@ function Home() {
           <div className='font-semibold'>
             {userData.username}
           </div>
-          <div className='text-gray-600'>
+          <div className='text-gray-600 '>
             {userData.headline}
           </div>
           <div className='text-gray-600 text-[15px]'>
@@ -69,7 +85,30 @@ function Home() {
         })}
 
       </div>
-      <div className='w-full lg:w-[25%] bg-white rounded h-[300px]'></div>
+
+
+      {/* {right part of the home} */}
+      <div className='w-full lg:w-[25%] bg-white rounded h-[300px] p-[10px]'>
+        <h1 className='text-gray-600 font-bold'>Suggested Users</h1>
+        <div className='flex flex-col gap-[10px] mt-[15px]'>
+          {suggestedUsers.map((user, index)=>{
+            return  <div key={index} className='flex flex-wrap sm:flex-nowrap justify-between items-start gap-[10px hover:bg-gray-200 rounded-lg p-[5px]'>
+                <div className='flex gap-2 items-start'>
+                    <div className='rounded-full  flex justify-center items-center cursor-pointer' onClick={()=> handleGetUserProfile(user._id) }>
+                        <img src={user.profileImage ? user.profileImage : profileImg} alt='profile image' className='h-[50px] w-[50px] rounded-full'/>
+                    </div>
+                    <div >
+                        <div className='font-bold'>{user.username}</div>
+                        <div className='text-gray-600 text-[14px]'>{user.headline}</div>
+                    </div>
+                </div>
+                <ConnectionBtn userId={user._id} customeStyle={"px-[5px] py-[2px]"} />
+              </div>
+          })}
+        </div>
+
+
+      </div>
     </div>
   </div>
 }

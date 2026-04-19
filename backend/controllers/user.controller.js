@@ -61,7 +61,51 @@ export const getUserProfile = async(req, res)=>{
 
     }
     catch(error){
-        console.log("getUserProfile error = ",error)
-        return res.status(500).json({message : "server error"})
+        console.log("getUserProfile controller error = ",error)
+        return res.status(500).json({message : "getUserProfile  error"})
+    }
+}
+
+
+export const search = async(req, res)=>{
+    try{
+        let {query} = req.query
+        if(!query){
+            return res.status(400).json({message : "query is required"})
+        }
+        let users = await User.find({
+            $or : [
+                {firstname : {$regex : query, $options:"i"}},
+                {lastname : {$regex : query, $options : "i"}},
+                {username : {$regex: query, $options: "i"}},
+                {skills : {$in: [query]}}
+            ]
+        })
+
+        return res.status(200).json(users)
+    }
+    catch(error){
+        console.log("search controller error = ",error)
+        return res.status(500).json({message : "search error"})
+    }
+}
+
+
+export const getSuggestedUsers = async(req, res)=>{
+    try{
+        let currentUser = await User.findById(req.currentUserId).select("connections")
+        console.log("currentUser in backend= ", currentUser)
+        let suggestedUsers = await User.find({
+            _id:{
+                $ne:req.currentUserId,
+                $nin : currentUser.connections
+            }
+        }).select("firstname lastname username headline profileImage")
+        console.log("suggestedusers in backend = ", suggestedUsers)
+        return res.status(200).json(suggestedUsers)
+    }
+    catch(error){
+        console.log("getSuggestedUser controller error")
+        return res.status(500).json({message : "getSuggestedUser error"})
     }
 }

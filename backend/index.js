@@ -9,6 +9,7 @@ import { postRouter } from "./routers/post.routes.js"
 import connectionRouter from "./routers/connection.routes.js"
 import http from 'http'
 import {Server} from 'socket.io'
+import notificationRouter  from "./routers/notification.routes.js"
 
 let app  = express()
 let server =  http.createServer(app)
@@ -33,6 +34,7 @@ app.use("/api/auth", authRouter)
 app.use("/api/user", currentUserRouter)
 app.use("/api/post", postRouter)
 app.use("/api/connection", connectionRouter)
+app.use("/api/notification", notificationRouter)
 
 export const userSocketMap = new Map()
 io.on("connection", (socket)=>{

@@ -36,9 +36,11 @@ function Posts({index, post}) {
     let [loadMore, setLoadMore] = useState(false)
     let [totalComments, setTotalComments] = useState(0)  //how much total comments of this post
 
-    const handleLike = async()=>{
+    const handleLike = async(postId)=>{
         try{
             let result = await axios.get(serverURL + `/api/post/like/${post._id}`, {withCredentials:true})
+            let response = await axios.post(serverURL+`/api/notification/create/${"like"}`, {postId}, {withCredentials:true})
+            console.log("notification create response = ", response)
             setPosts((prevposts)=>{
                 return prevposts.map((p)=> p._id === post._id ? result.data : p)
             })
@@ -57,9 +59,11 @@ function Posts({index, post}) {
     }
 
 
-    let handleComment = async(e)=>{
+    let handleComment = async(postId)=>{
         try{
             let result = await axios.post(serverURL + `/api/post/comment/${post._id}`,{message}, {withCredentials:true})
+            let response = await axios.post(serverURL+`/api/notification/create/${"comment"}`, {postId}, {withCredentials:true})
+            console.log("notification create response = ", response)
             setPosts((prevposts)=>{
                 return prevposts.map((p)=> p._id === post._id ? result.data : p)
             })
@@ -114,7 +118,7 @@ function Posts({index, post}) {
     }, [post._id])
 
   return <div key={index}  className='w-full p-4 rounded-md bg-white flex flex-col'>
-    <div className='flex flex-wrap justify-between items-center gap-[10px'>
+    <div className='flex flex-wrap justify-between items-start gap-[10px'>
         <div className='flex gap-2 items-start'>
             <div className='rounded-full  flex justify-center items-center cursor-pointer' onClick={()=>{ 
                 if(post.author._id !== userData._id){
@@ -124,7 +128,7 @@ function Posts({index, post}) {
                     navigate("/profile")
                 }
             }}>
-                <img src={post?.author?.profileImage ? post?.author?.profileImage : profileImg} alt='profile image' className='h-[50px] w-[50px] rounded-full'/>
+                <img src={post.author?.profileImage ? post.author?.profileImage : profileImg} alt='profile image' className='h-[50px] w-[50px] rounded-full'/>
             </div>
             <div >
                 <div className='font-bold'>{post?.author?.username}</div>
@@ -132,7 +136,7 @@ function Posts({index, post}) {
                 <div className=' text-gray-600 text-[14px]'>{moment(post.createdAt).fromNow()}</div>
             </div>
         </div>
-        {userData._id !== post.author?._id && <ConnectionBtn userId={post.author?._id} customeStyle={""} />}
+        {userData._id !== post.author?._id && <ConnectionBtn userId={post.author?._id} customeStyle={"px-[15px] py-[5px] "} />}
     </div>
     <div className=' w-full mt-[10px]'>
         {!readMore ? (post.description.length < 100) ? post.description : post.description.split(" ").slice(0,15).join(" ")+"..." :  post.description}
@@ -159,18 +163,17 @@ function Posts({index, post}) {
             <div>{likes}</div>
         </div>
         <div className='flex gap-[8px] items-center'>
-            {/* <div>{post.comments.length}</div> */}
             <div>{totalComments}</div>
             <div>commnets</div>
         </div>
     </div>
     <div className='border-gray-400 border-1 my-[10px]'></div>
     <div className='flex gap-[30px] itmes-center'>
-        {!post.likes.includes(userData._id) && <div className='flex gap-[8px] items-center cursor-pointer' onClick={handleLike}>
+        {!post.likes.includes(userData._id) && <div className='flex gap-[8px] items-center cursor-pointer' onClick={()=> handleLike(post._id)}>
             <GrLike className='text-blue-600' />
             <div>Like</div>
         </div>}
-        {post.likes.includes(userData._id) && <div className='flex gap-[8px] items-center cursor-pointer' onClick={handleLike}>
+        {post.likes.includes(userData._id) && <div className='flex gap-[8px] items-center cursor-pointer' onClick={()=> handleLike(post._id)}>
             <BiSolidLike className='text-blue-600' />
             <div>Liked</div>
         </div>}
@@ -193,7 +196,7 @@ function Posts({index, post}) {
                     handleTextarea(e)
                     setMessage(e.target.value)
                 }} />
-            <IoSend className='text-blue-600 h-[23px] w-[23px] cursor-pointer' onClick={handleComment} />
+            <IoSend className='text-blue-600 h-[23px] w-[23px] cursor-pointer' onClick={()=> handleComment(post._id)} />
         </div>}
         {isComment && <div className='border-1 border-gray-400 mt-[10px]'></div>}
     </div>

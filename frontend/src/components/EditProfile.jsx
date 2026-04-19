@@ -151,7 +151,6 @@ function EditProfile() {
             setUserData(result.data)
             setLoading(false)
             setEditUser(false)
-            navigate('/')
         }
         catch(error){
             setLoading(false)

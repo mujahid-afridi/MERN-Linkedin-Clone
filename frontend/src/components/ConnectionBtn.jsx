@@ -76,7 +76,7 @@ export default function ConnectionBtn({userId, customeStyle}) {
 
   return (
     <div>
-        <button disabled={status === "pending"} className={`border-2  border-blue-400 text-blue-400 text-center px-[15px] py-[5px] rounded-full cursor-pointer ${status == "pending" ? "border-blue-200 text-blue-200 " : ""}  ${customeStyle}`} onClick={handleClick}>{status}</button>
+        <button disabled={status === "pending"} className={`border-2  border-blue-400 text-blue-400 text-center rounded-full cursor-pointer ${status == "pending" ? "border-blue-200 text-blue-200 " : ""}  ${customeStyle}`} onClick={handleClick}>{status}</button>
     </div>
   )
 }

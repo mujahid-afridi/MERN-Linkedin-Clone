@@ -21,6 +21,7 @@ function Profile() {
     let [connections, setConnections] = useState([])
     let [userPosts, setUserPosts] = useState([])
 
+
     let handleConnections = async()=>{
         try{
             let result;
@@ -60,10 +61,10 @@ function Profile() {
   return <div className='min-h-screen bg-gray-200 overflow-auto'  >
     <Navbar />
     {editUser && <EditProfile />}
-    {Object.keys(profileData || {}).length > 0 && <div className='w-full flex flex-col gap-[20px] items-center pt-[70px] pb-[20px] px-[10px]'>
+    {Object.keys(profileData || {}).length > 0 && profileData._id !== userData._id && <div className='w-full flex flex-col gap-[20px] items-center pt-[70px] pb-[20px] px-[10px]'>
         <div className='w-full lg:max-w-[900px] bg-white rounded-lg p-[10px] relative shadow-lg'>
-            <div className='bg-gray-400 h-[110px] rounded cursor-pointer' >
-              {profileData?.coverImage && <img src={profileData.coverImage} alt="cover image"  className='w-[100%] h-[100%]'/>}
+            <div className='bg-gray-400 h-[110px] rounded-lg cursor-pointer' >
+              {profileData.coverImage && <img src={profileData.coverImage} alt="cover image"  className='w-[100%] h-[100%] rounded-lg'/>}
               <IoIosCamera className='h-[25px] w-[25px] absolute top-3 right-4 text-white' />
             </div>
             <div className='rounded-full bg-blue-200 h-[50px] w-[50px]  flex justify-center items-center cursor-pointer  absolute top-[90px] left-6'>
@@ -126,7 +127,7 @@ function Profile() {
 
 
 
-    {Object.keys(profileData || {}).length === 0  && <div className='w-full flex flex-col gap-[20px] items-center pt-[70px] pb-[20px] px-[10px]'>
+    {(Object.keys(profileData || {}).length === 0 || profileData._id === userData._id)  && <div className='w-full flex flex-col gap-[20px] items-center pt-[70px] pb-[20px] px-[10px]'>
         <div className='w-full lg:max-w-[900px] bg-white rounded-lg p-[10px] relative shadow-lg'>
             <div className='bg-gray-400 h-[110px] rounded cursor-pointer' >
               {userData?.coverImage && <img src={userData.coverImage} alt="cover image"  className='w-[100%] h-[100%]'/>}
