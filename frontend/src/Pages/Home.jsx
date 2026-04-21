@@ -1,4 +1,4 @@
-import React, { useContext, useState , useEffect} from 'react'
+import React, { useContext, useState , useEffect, useRef} from 'react'
 import Navbar from '../components/Navbar'
 import { userDataContext } from "../context/CurrentUserContext.jsx"
 import { IoIosCamera } from "react-icons/io";
@@ -15,8 +15,11 @@ import ConnectionBtn from '../components/ConnectionBtn.jsx';
 
 function Home() {
   const {serverURL} = useContext(authDataContext)
-  let {userData, setUserData, editUser, setEditUser, postPopup, setPostPopup, posts, setPosts, getAllPosts, handleGetUserProfile} = useContext(userDataContext)
+  let {userData, setUserData, editUser, setEditUser, postPopup, setPostPopup, posts, setPosts, getAllPosts, handleGetUserProfile, skipPost,setSkipPost, limit, hasMore} = useContext(userDataContext)
   let [suggestedUsers, setSuggestedUsers] = useState([])
+  const observer = useRef()
+  const [loadingPosts, setLoadingPosts] = useState(false)
+  let [isLargeScreen,setIsLargeScreen] = useState(false)
 
   let handleSuggestedUsers = async()=>{
     try{
@@ -29,16 +32,49 @@ function Home() {
     }
   }
 
-  useEffect(()=>{
-    getAllPosts()
-    handleSuggestedUsers()
-  }, [userData])
 
-  return <div className='min-h-screen bg-gray-200 flex justify-center' >
+  const lastPostRef = (node) => {
+    if (!node) return
+
+    if (observer.current) observer.current.disconnect()
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !loadingPosts && hasMore) {
+        // load more posts
+        setLoadingPosts(true)
+        let newSkip = skipPost + limit
+        setSkipPost(newSkip)
+        getAllPosts(newSkip)
+        .finally(() => {
+          setLoadingPosts(false)
+        })
+      }
+  })
+
+  observer.current.observe(node)
+}
+
+  useEffect(()=>{
+    console.log("methood called")
+    getAllPosts(),
+    handleSuggestedUsers()
+  }, [])
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024)
+    }
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
+  return <div className='min-h-screen  bg-gray-200 flex justify-center' >
     <Navbar />
     {editUser && <EditProfile />}
-    <div className='flex flex-col lg:flex-row  gap-[10px] px-[10px] pt-[70px] w-full lg:max-w-[1440px] overflow-auto'>
-      {/* //left part of home */}
+    {/* Home */}
+    <div className='flex flex-col lg:flex-row  gap-[10px] px-[10px] pt-[70px] w-full lg:max-w-[1440px]'>
+      {/* left part of home */}
       <div className='w-full lg:w-[25%] bg-white rounded p-[10px] relative'>
         <div className='bg-gray-400 h-[110px] rounded-lg cursor-pointer' >
           {userData?.coverImage && <img src={userData.coverImage} alt="cover image"  className='w-[100%] h-[100%] rounded-lg'/>}
@@ -67,9 +103,9 @@ function Home() {
         </div>
       </div>
 
-      {/* //main part of home */}
+      {/* main part of home */}
       {postPopup && <CreatePostPopup />}
-      <div className='w-full flex flex-col gap-[20px] lg:w-[50%]  rounded h-full overflow-y-auto'>
+      <div className='w-full bg-blue-500 flex flex-col gap-[20px] lg:w-[50%] rounded overflow-y-auto overflow-x-hidden'>
         
         <div className='flex items-center justify-center gap-4 bg-white p-4 rounded'>
           <div className='rounded-full  flex justify-center items-center cursor-pointer'>
@@ -80,15 +116,42 @@ function Home() {
           </div>
         </div>
 
-        {posts && posts.map((post, i)=>{
-          return <Posts index={i} post={post} />
+
+        {isLargeScreen && posts && posts.map((post, i) => {
+          if (posts.length === i + 2) {
+            return (
+              <div ref={lastPostRef} key={i}>
+                <Posts index={i} post={post} />
+              </div>
+            )
+          } else {
+            return <Posts key={i} index={i} post={post} />
+          }
+        })} 
+        {isLargeScreen && hasMore && <div className='w-full flex justify-center'>
+          <div className="w-10 h-10 border-3 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+        </div>}
+
+
+
+        {!isLargeScreen && posts && posts.map((post, i)=>{
+          return <Posts key={i} index={i} post={post} />
         })}
 
+        {!isLargeScreen && hasMore && <div className='w-full flex justify-center font-semibold' onClick={()=> {
+          let newSkipPostValue = skipPost + limit
+          setSkipPost(newSkipPostValue)
+          getAllPosts(newSkipPostValue)
+        }}>
+          <button className='w-full cursor-pointer py-2 my-[10px] md:max-w-[200px] bg-white rounded-full'>Load more...</button>
+        </div>}
+
+        
       </div>
 
 
       {/* {right part of the home} */}
-      <div className='w-full lg:w-[25%] bg-white rounded h-[300px] p-[10px]'>
+      <div className='w-full lg:w-[25%] bg-white rounded h-[300px] p-[10px] '>
         <h1 className='text-gray-600 font-bold'>Suggested Users</h1>
         <div className='flex flex-col gap-[10px] mt-[15px]'>
           {suggestedUsers.map((user, index)=>{

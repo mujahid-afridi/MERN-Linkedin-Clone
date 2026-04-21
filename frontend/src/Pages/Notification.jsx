@@ -63,35 +63,37 @@ function Notification() {
     }, [userData])
 
 
-  return <div className='h-screen bg-gray-200 flex justify-center overflow-auto' >
+  return <div className='h-screen bg-gray-200 flex justify-center' >
     <Navbar/>
     <div className='w-full  mt-[50px] p-[20px]'>
-        <div className='w-full p-[10px] h-[100px] bg-white rounded-md flex items-center font-semibold text-gray-700'>
-            Notification {notifications.length}
+        <div className='w-full p-[10px] h-[100px] bg-white rounded-md flex flex-wrap items-center justify-between font-semibold text-gray-700'>
+            <div>Notification {notifications.length}</div> 
+            {notifications.length > 0 && <div className='border-2 border-red-600 rounded-full w-[75px] sm:min-w-[100px] text-center cursor-pointer' onClick={handleClearAllNotification}>clear all</div>}
         </div>
-        {notifications.length > 0 && <div className='flex flex-col flex-wrap items-center mt-[20px] gap-[10px]'>
+        {notifications.length > 0 && <div className='rounded-md flex flex-col  items-center mt-[20px] gap-[10px] h-[80%] overflow-auto'>
            { notifications.map((notification, index)=> {
                 return <div key={index} className='w-full md:max-w-[60%] p-[10px] bg-white rounded-md flex flex-col justify-between '>
                     <div className='flex gap-[10px] md:gap-[20px]'>
-                        <div className='rounded-full bg-blue-300 flex justify-center items-center cursor-pointer h-[50px] w-[50px] rounded-full'>
-                            <img src={notification.relatedUser?.profileImage ||  profileImg} alt='profile image' className='h-full w-full rounded-full'/>
+                        <div className='flex gap-[10px] flex-col md:flex-row w-[90%]'>
+                            <div className='rounded-full bg-blue-300 flex justify-center items-center cursor-pointer h-[50px] w-[50px] rounded-full'>
+                                <img src={notification.relatedUser?.profileImage ||  profileImg} alt='profile image' className='h-full w-full rounded-full'/>
+                            </div>
+                            <div className='flex flex-col gap-[10px] w-full pt-[10px] overflow-hidden'>
+                                <div className='font-semibold'>{notification.relatedUser?.username}   <span className='text-gray-600'>{handleType(notification)}</span></div>
+                                {notification.type !== "connectionAccepted" && <div className='flex gap-[10px]  items-center'>
+                                    {notification.relatedPost?.image ?  (<img src={notification.relatedPost?.image} className='h-[60px] w-[100px] rounded-lg' alt="" />) : notification.relatedPost?.video ? (
+                                        <video
+                                            src={notification.relatedPost.video}
+                                            className='h-[60px] w-[100px] rounded-lg object-cover'
+                                        />) : null}
+                                    <div className="line-clamp-1">{notification.relatedPost?.description}</div>
+                                </div>}
+                            </div>
                         </div>
-                        <div className='flex flex-col gap-[10px] w-full pt-[10px]'>
-                            <div className='font-semibold'>{notification.relatedUser?.username}   <span className='text-gray-600'>{handleType(notification)}</span></div>
-                            {notification.type !== "connectionAccepted" && <div className='flex gap-[10px]  items-center'>
-                                {notification.relatedPost?.image ?  (<img src={notification.relatedPost?.image} className='h-[60px] w-[100px] rounded-lg' alt="" />) : notification.relatedPost?.video ? (
-                                    <video
-                                        src={notification.relatedPost.video}
-                                        className='h-[60px] w-[100px] rounded-lg object-cover'
-                                    />) : null}
-                                <div className="line-clamp-1">{notification.relatedPost?.description}</div>
-                            </div>}
-                        </div>
-                        <div className='flex items-center'>
+                        <div className='flex items-start  md:items-center'>
                             <RxCross1 className='border-2 rounded-full text-red-400 text-2xl p-1 cursor-pointer' onClick={()=> handleDeleteOneNotification(notification._id)} />
                         </div>
                     </div>
-                    
                 </div>
             })}
         </div>}

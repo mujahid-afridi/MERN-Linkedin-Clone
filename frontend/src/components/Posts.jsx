@@ -11,11 +11,10 @@ import { useEffect } from 'react';
 import { BiSolidLike } from "react-icons/bi";
 import { IoSend } from "react-icons/io5";
 import { useRef } from 'react';
-import {io, Socket} from 'socket.io-client'
 import ConnectionBtn from './ConnectionBtn.jsx';
 import { useNavigate } from 'react-router-dom';
 
-const socket = io("http://localhost:9000")
+import { socket } from '../context/CurrentUserContext.jsx';
 
 function Posts({index, post}) {
 
@@ -39,8 +38,7 @@ function Posts({index, post}) {
     const handleLike = async(postId)=>{
         try{
             let result = await axios.get(serverURL + `/api/post/like/${post._id}`, {withCredentials:true})
-            let response = await axios.post(serverURL+`/api/notification/create/${"like"}`, {postId}, {withCredentials:true})
-            console.log("notification create response = ", response)
+            {!post.likes.includes(userData._id) && await axios.post(serverURL+`/api/notification/create/${"like"}`, {postId}, {withCredentials:true})}
             setPosts((prevposts)=>{
                 return prevposts.map((p)=> p._id === post._id ? result.data : p)
             })
@@ -63,7 +61,6 @@ function Posts({index, post}) {
         try{
             let result = await axios.post(serverURL + `/api/post/comment/${post._id}`,{message}, {withCredentials:true})
             let response = await axios.post(serverURL+`/api/notification/create/${"comment"}`, {postId}, {withCredentials:true})
-            console.log("notification create response = ", response)
             setPosts((prevposts)=>{
                 return prevposts.map((p)=> p._id === post._id ? result.data : p)
             })
@@ -105,7 +102,7 @@ function Posts({index, post}) {
             }
         })
 
-        socket.on("commentUpdated", ({postId, comments})=>{
+        socket.on("commentsUpdated", ({postId, comments})=>{
             if(postId == post._id){
                 setTotalComments(comments.length)
             }
@@ -113,12 +110,12 @@ function Posts({index, post}) {
 
         return ()=>{
             socket.off("likeUpdated")
-            socket.off("commentUpdated")
+            socket.off("commentsUpdated")
         }
     }, [post._id])
 
-  return <div key={index}  className='w-full p-4 rounded-md bg-white flex flex-col'>
-    <div className='flex flex-wrap justify-between items-start gap-[10px'>
+  return <div className='w-full p-4 rounded-md bg-white flex flex-col'>
+    <div className='flex flex-wrap justify-between items-start gap'>
         <div className='flex gap-2 items-start'>
             <div className='rounded-full  flex justify-center items-center cursor-pointer' onClick={()=>{ 
                 if(post.author._id !== userData._id){
@@ -138,11 +135,11 @@ function Posts({index, post}) {
         </div>
         {userData._id !== post.author?._id && <ConnectionBtn userId={post.author?._id} customeStyle={"px-[15px] py-[5px] "} />}
     </div>
-    <div className=' w-full mt-[10px]'>
+    <div className=' w-full mt-[10px] overflow-hidden'>
         {!readMore ? (post.description.length < 100) ? post.description : post.description.split(" ").slice(0,15).join(" ")+"..." :  post.description}
     </div>
-    {post.description?.length > 100 && <div className='cursor-pointer mt-[10px]' onClick={()=> setReadMore(!readMore)}>{readMore ? "less...": "... more"}</div>}
-    <div className="w-full h-full max-h-[300px] bg-black overflow-hidden rounded-lg flex justify-center mt-[10px]">
+    {post.description?.length > 100 && <div className='cursor-pointer mt-[10px]' onClick={()=> setReadMore(!readMore)}>{readMore ? "... less": "read more..."}</div>}
+    {(post.image || post.video) && <div className="w-full max-h-[300px] bg-black overflow-hidden rounded-lg flex justify-center mt-[10px]">
         {post.image ? (
             <img
             src={post.image}
@@ -156,7 +153,7 @@ function Posts({index, post}) {
             controls
             />
         ) : null}
-    </div>
+    </div>}
     <div className='flex justify-between itmes-center mt-[5px]'>
         <div className='flex gap-[8px] items-center'>
             <AiOutlineLike className='text-blue-600'  />

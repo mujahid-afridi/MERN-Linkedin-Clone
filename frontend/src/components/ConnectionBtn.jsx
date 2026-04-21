@@ -1,15 +1,12 @@
 import React from 'react'
 import axios from "axios"
 import { useContext } from 'react'
-import io from 'socket.io-client'
 import { useEffect } from 'react'
 import { userDataContext } from '../context/CurrentUserContext.jsx'
 import { authDataContext } from '../context/AuthContext.jsx'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
-export const socket = io("http://localhost:9000")
-
+import { socket } from '../context/CurrentUserContext.jsx'
 export default function ConnectionBtn({userId, customeStyle}) {
 
   const {serverURL} = useContext(authDataContext)

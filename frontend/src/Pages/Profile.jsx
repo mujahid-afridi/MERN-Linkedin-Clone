@@ -12,7 +12,7 @@ import axios from 'axios'
 import { authDataContext } from '../context/AuthContext.jsx'
 import { useState } from 'react'
 import { useEffect } from 'react'
-import ConnectionBtn, { socket } from '../components/ConnectionBtn.jsx'
+import { socket } from '../context/CurrentUserContext.jsx'
 import Posts from '../components/Posts.jsx'
 
 function Profile() {

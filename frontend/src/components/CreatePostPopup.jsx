@@ -86,11 +86,11 @@ function CreatePostPopup() {
             </div>
             <div className='font-bold text-center'>{userData?.username}</div>
         </div>
-        <div className='mt-[18px]'>
-            <textarea value={description} className={`${file ? "h-[100px]" :"h-[300px]"} resize-none w-full  bg-pink-200 outline-none`} onChange={(e)=> setDescription(e.target.value)}></textarea>
+        <div className='mt-[5px]'>
+            <textarea value={description} placeholder='What do you want to talk about?' className={`${file ? "h-[100px]" :"h-[300px]"} resize-none w-full outline-none`} onChange={(e)=> setDescription(e.target.value)}></textarea>
         </div>
         <input type="file" accept='image/*, video/*' hidden ref={postMedia} onChange={handleFile}/> 
-        {file && <div className='w-full h-[200px]'>
+        {file && <div className='w-full h-[200px] mt-[10px]'>
             {fileType=="image" && <img src={frontendImage ? frontendImage : profileImg} className=' w-full h-full rounded-lg' />}
             {fileType=="video" && <video src={frontendVideo ? frontendVideo : ""} controls className=' w-full h-full rounded-lg'/>}
         </div>}
@@ -99,8 +99,9 @@ function CreatePostPopup() {
         </div>
         <div className='w-full h-[1px] bg-black'></div>
         <div className='w-full flex justify-end items-center'>
-            <button type='button' className={`${loading ? "bg-blue-300" : "bg-blue-400"}  text-white font-bold rounded-full px-6 py-2 cursor-pointer ${loading ? "disabled" : ""}`} onClick={handlePost}>{loading ? <div className="w-10 h-10 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div> : "Post"}</button>
+            <button type='button' className={`${loading ? "bg-blue-100" : "bg-blue-400"}  text-white font-bold flex justify-center items-center rounded-full min-w-[100px] py-1 cursor-pointer ${loading ? "disabled" : ""}`} onClick={handlePost}>{loading ? <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div> : "Post"}</button>
         </div>
+
     </div>
   </div>
 }

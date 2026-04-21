@@ -2,9 +2,9 @@ import uploadOnCloudinary from "../config/cloudinary.js"
 import { io } from "../index.js"
 import Post from "../models/post.model.js"
 
-
 export const getAllPosts = async(req, res)=>{
     try{
+        let {skip, limit} = req.query
         let posts = await Post.find()
             .sort({createdAt : -1})
             .populate({
@@ -20,7 +20,9 @@ export const getAllPosts = async(req, res)=>{
             post.comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         })
 
-        return res.status(200).json(posts)
+        let paginated = posts.slice(Number(skip), Number(skip)+Number(limit))
+
+        return res.status(200).json(paginated)
     }
     catch(error){
         console.log(error)
@@ -159,7 +161,7 @@ export const getComments = async(req, res)=>{
             })
         }
 
-        io.emit("commentUpdated", {postId, comments : post.comments})
+        io.emit("commentsUpdated", {postId, comments : post.comments})
 
         let sortedComments = post.comments?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
