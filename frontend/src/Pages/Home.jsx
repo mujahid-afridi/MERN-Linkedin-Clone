@@ -127,7 +127,7 @@ function Home() {
         <h1 className='text-gray-600 font-bold'>Suggested Users</h1>
         <div className='flex flex-col gap-[10px] mt-[15px]'>
           {suggestedUsers.map((user, index)=>{
-            return  <div key={index} className='flex flex-wrap sm:flex-nowrap justify-between items-start gap-[10px hover:bg-gray-200 rounded-lg p-[5px]'>
+            return  <div key={index} className='flex justify-between items-start gap-[10px hover:bg-gray-200 rounded-lg p-[5px]'>
                 <div className='flex gap-2 items-start'>
                     <div className='rounded-full  flex justify-center items-center cursor-pointer' onClick={()=> handleGetUserProfile(user._id) }>
                         <img src={user.profileImage ? user.profileImage : profileImg} alt='profile image' className='h-[50px] w-[50px] rounded-full'/>

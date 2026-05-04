@@ -60,18 +60,18 @@ function Navbar() {
 
 
   return (
-   <div className='w-full bg-white fixed top-0 left-0 z-10 h-13 shadow-lg flex justify-center items-center px-[5px]'>
-     <div className='w-full max-w-[2000px] flex  justify-between sm:justify-around items-center relative'>
+   <div className='w-full bg-white fixed top-0 left-0 z-10 md:h-13 py-2 shadow-lg flex justify-center items-center px-[5px]'>
+     <div className='w-full max-w-[2000px] flex flex-wrap gap-[20px] justify-between sm:justify-around items-center relative'>
         
         <div className='flex justify-between gap-[5px]  items-center md:relative '>
-          <div className='w-10 h-10 cursor-pointer' onClick={()=> navigate("/")}>
+          <div className='md:w-10 md:h-10 w-8 h-8 cursor-pointer' onClick={()=> navigate("/")}>
             <img src={logo2}/>
           </div>
-          {activeSearch==false && <IoSearchSharp className='lg:hidden h-[25px] w-[25px] cursor-pointer' onClick={()=> setActiveSearch(!activeSearch)} />}
+          {activeSearch==false && <IoSearchSharp className='lg:hidden md:h-[25px] md:w-[25px] h-[20px] w-[20px] cursor-pointer' onClick={()=> setActiveSearch(!activeSearch)} />}
           
-          {searchInput.length > 0 && searchData?.length > 0 && (<div className='bg-white shadow-lg p-[10px] rounded-lg  absolute left-[0px] top-[60px] max-h-[300px] md:max-h-[400px] w-full lg:w-[800px] flex flex-col gap-[10px] overflow-auto'>
+          {searchInput.length > 0 && searchData?.length > 0 && (<div className='bg-white shadow-lg  p-[10px] rounded-lg  absolute left-[0px] top-[60px] max-h-[300px] md:max-h-[400px] w-full lg:w-[800px] flex flex-col gap-[10px] overflow-auto'>
             {searchData && searchData.map((user, index)=>{
-              return <div key={index} className='flex gap-2 items-start p-[10px] rounded hover:bg-gray-200 cursor-pointer' onClick={()=>{
+              return <div key={index} className='flex gap-2 items-start lg:p-[10px] rounded hover:bg-gray-200 cursor-pointer' onClick={()=>{
                 console.log("user in search = ",user)
                 handleGetUserProfile(user._id) 
                 setSearchInput("")
@@ -88,8 +88,8 @@ function Navbar() {
           </div>)}
 
           <form>
-            <div className={`${activeSearch ? "flex":"hidden"} md:w-[400px] lg:flex items-center gap-[10px] border-2 border-gray-200 rounded-3xl px-[8px] py-[6px]`}>
-                <IoSearchSharp className='h-[25px] w-[25px] cursor-pointer' onClick={()=> setActiveSearch(!activeSearch)}/>
+            <div className={`${activeSearch ? "flex":"hidden"} w-[200px] md:w-[400px] lg:flex items-center gap-[10px] border-1 md:border-2 border-gray-200 rounded-3xl px-[4px] md:px-[8px] py-[3px] md:py-[6px]`}>
+                <IoSearchSharp className='md:h-[25px] md:w-[25px] h-[20px] w-[20px]  cursor-pointer' onClick={()=> setActiveSearch(!activeSearch)}/>
                 <input type="text" placeholder='search...' className='outline-none w-full' value={searchInput} onChange={(e)=> setSearchInput(e.target.value)}/>
             </div>
           </form>
@@ -107,12 +107,12 @@ function Navbar() {
             <div className='text-sm text-gray-800'>My Network</div>
           </div>
           <div className='flex flex-col items-center cursor-pointer' onClick={()=> navigate("/notification")}>
-            <div><IoNotifications className='h-[20px] w-[20px]'/></div>
+            <div><IoNotifications className='md:h-[20px] md:w-[20px]  h-[15px] w-[15px]'/></div>
             <div className='hidden sm:flex text-sm text-gray-800'>Notification</div>
           </div>
           <div ref={popupRef}>
             <div className='rounded-full bg-blue-300 flex justify-center items-center cursor-pointer' onClick={()=> setShowProfilePopup(!showProfilePopup)}>
-              <img src={userData.profileImage ||  profileImg} alt='profile image' className='h-[40px] w-[40px] rounded-full'/>
+              <img src={userData.profileImage ||  profileImg} alt='profile image' className='h-[30px] w-[30px] md:h-[40px] md:w-[40px] rounded-full'/>
             </div>
             {showProfilePopup && <ProfilePopup />}
           </div>
