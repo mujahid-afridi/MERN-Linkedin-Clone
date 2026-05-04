@@ -69,22 +69,23 @@ function Navbar() {
           </div>
           {activeSearch==false && <IoSearchSharp className='lg:hidden h-[25px] w-[25px] cursor-pointer' onClick={()=> setActiveSearch(!activeSearch)} />}
           
-          {searchInput.length > 0 && <div className='bg-white shadow-lg p-[10px] rounded-lg  absolute left-[0px] top-[60px] max-h-[300px] md:max-h-[400px] w-full lg:w-[800px] flex flex-col gap-[10px] overflow-auto'>
-          {searchData && searchData.map((user, index)=>{
-            return <div key={index} className='flex gap-2 items-start p-[10px] rounded hover:bg-gray-200 cursor-pointer' onClick={()=>{
-              handleGetUserProfile(user._id) 
-              setSearchInput("")
-            } }>
-              <div className='rounded-full  flex justify-center items-center '>
-                  <img src={user.profileImage ? user.profileImage : profileImg} alt='profile image' className='h-[50px] w-[50px] rounded-full'/>
+          {searchInput.length > 0 && searchData?.length > 0 && (<div className='bg-white shadow-lg p-[10px] rounded-lg  absolute left-[0px] top-[60px] max-h-[300px] md:max-h-[400px] w-full lg:w-[800px] flex flex-col gap-[10px] overflow-auto'>
+            {searchData && searchData.map((user, index)=>{
+              return <div key={index} className='flex gap-2 items-start p-[10px] rounded hover:bg-gray-200 cursor-pointer' onClick={()=>{
+                console.log("user in search = ",user)
+                handleGetUserProfile(user._id) 
+                setSearchInput("")
+              } }>
+                <div className='rounded-full  flex justify-center items-center '>
+                    <img src={user.profileImage ? user.profileImage : profileImg} alt='profile image' className='h-[50px] w-[50px] rounded-full'/>
+                </div>
+                <div >
+                    <div className='font-bold'>{user.username}</div>
+                    <div className='text-gray-600 text-[14px]'>{user.headline}</div>
+                </div>
               </div>
-              <div >
-                  <div className='font-bold'>{user.username}</div>
-                  <div className='text-gray-600 text-[14px]'>{user.headline}</div>
-              </div>
-            </div>
-          })}
-          </div>}
+            })}
+          </div>)}
 
           <form>
             <div className={`${activeSearch ? "flex":"hidden"} md:w-[400px] lg:flex items-center gap-[10px] border-2 border-gray-200 rounded-3xl px-[8px] py-[6px]`}>

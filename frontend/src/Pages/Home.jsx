@@ -24,7 +24,6 @@ function Home() {
   let handleSuggestedUsers = async()=>{
     try{
       let result  = await axios.get(serverURL+`/api/user/suggestedusers`, {withCredentials:true})
-      console.log("suggestedusers = ", result.data)
       setSuggestedUsers(result.data)
     }
     catch(error){
@@ -55,27 +54,17 @@ function Home() {
 }
 
   useEffect(()=>{
-    console.log("methood called")
     getAllPosts(),
     handleSuggestedUsers()
-  }, [])
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsLargeScreen(window.innerWidth >= 1024)
-    }
-    handleResize()
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
   }, [])
 
   return <div className='min-h-screen  bg-gray-200 flex justify-center' >
     <Navbar />
     {editUser && <EditProfile />}
     {/* Home */}
-    <div className='flex flex-col lg:flex-row  gap-[10px] px-[10px] pt-[70px] w-full lg:max-w-[1440px]'>
+    <div className='flex flex-col lg:flex-row gap-[10px] px-[10px] pt-[70px] w-full lg:max-w-[1440px]'>
       {/* left part of home */}
-      <div className='w-full lg:w-[25%] bg-white rounded p-[10px] relative'>
+      <div className='w-full lg:w-[25%] bg-white rounded p-[10px] lg:sticky top-18 self-start'>
         <div className='bg-gray-400 h-[110px] rounded-lg cursor-pointer' >
           {userData?.coverImage && <img src={userData.coverImage} alt="cover image"  className='w-[100%] h-[100%] rounded-lg'/>}
           <IoIosCamera className='h-[25px] w-[25px] absolute top-3 right-4 text-white' />
@@ -105,7 +94,7 @@ function Home() {
 
       {/* main part of home */}
       {postPopup && <CreatePostPopup />}
-      <div className='w-full bg-blue-500 flex flex-col gap-[20px] lg:w-[50%] rounded overflow-y-auto overflow-x-hidden'>
+      <div className='w-full flex flex-col gap-[20px] pb-[10px] lg:w-[50%] rounded overflow-y-auto overflow-x-hidden'>
         
         <div className='flex items-center justify-center gap-4 bg-white p-4 rounded'>
           <div className='rounded-full  flex justify-center items-center cursor-pointer'>
@@ -117,23 +106,6 @@ function Home() {
         </div>
 
 
-        {isLargeScreen && posts && posts.map((post, i) => {
-          if (posts.length === i + 2) {
-            return (
-              <div ref={lastPostRef} key={i}>
-                <Posts index={i} post={post} />
-              </div>
-            )
-          } else {
-            return <Posts key={i} index={i} post={post} />
-          }
-        })} 
-        {isLargeScreen && hasMore && <div className='w-full flex justify-center'>
-          <div className="w-10 h-10 border-3 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-        </div>}
-
-
-
         {!isLargeScreen && posts && posts.map((post, i)=>{
           return <Posts key={i} index={i} post={post} />
         })}
@@ -143,7 +115,7 @@ function Home() {
           setSkipPost(newSkipPostValue)
           getAllPosts(newSkipPostValue)
         }}>
-          <button className='w-full cursor-pointer py-2 my-[10px] md:max-w-[200px] bg-white rounded-full'>Load more...</button>
+          <button className='w-full cursor-pointer py-2 my-[10px] md:max-w-[200px] bg-white rounded-full hover:bg-gray-300'>Click Load more...</button>
         </div>}
 
         
@@ -151,7 +123,7 @@ function Home() {
 
 
       {/* {right part of the home} */}
-      <div className='w-full lg:w-[25%] bg-white rounded h-[300px] p-[10px] '>
+      <div className='w-full lg:w-[25%] bg-white rounded h-[300px] p-[10px] lg:sticky top-18 self-start'>
         <h1 className='text-gray-600 font-bold'>Suggested Users</h1>
         <div className='flex flex-col gap-[10px] mt-[15px]'>
           {suggestedUsers.map((user, index)=>{

@@ -94,14 +94,12 @@ export const search = async(req, res)=>{
 export const getSuggestedUsers = async(req, res)=>{
     try{
         let currentUser = await User.findById(req.currentUserId).select("connections")
-        console.log("currentUser in backend= ", currentUser)
         let suggestedUsers = await User.find({
             _id:{
                 $ne:req.currentUserId,
                 $nin : currentUser.connections
             }
         }).select("firstname lastname username headline profileImage")
-        console.log("suggestedusers in backend = ", suggestedUsers)
         return res.status(200).json(suggestedUsers)
     }
     catch(error){

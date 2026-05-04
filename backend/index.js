@@ -38,15 +38,13 @@ app.use("/api/notification", notificationRouter)
 
 export const userSocketMap = new Map()
 io.on("connection", (socket)=>{
-    console.log("User connected : ", socket.id)
 
     socket.on("register", (userId)=>{
         userSocketMap.set(userId, socket.id)
-        console.log("userSocketMap = ", userSocketMap)
     })
 
     socket.on("disconnect", ()=>{
-        console.log("User disconnected : ", socket.id)
+        console.log("User disconnected")
     })
 })
 

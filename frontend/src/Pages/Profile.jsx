@@ -14,6 +14,7 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import { socket } from '../context/CurrentUserContext.jsx'
 import Posts from '../components/Posts.jsx'
+import ConnectionBtn from '../components/ConnectionBtn.jsx'
 
 function Profile() {
     let {serverURL} = useContext(authDataContext)
@@ -100,7 +101,7 @@ function Profile() {
         {<div className='w-full lg:max-w-[900px] bg-white p-[10px] rounded-lg'>
             <div className='font-semibold text-gray-500'>Skills</div>
             <div className='flex gap-[15px] mt-[20px] items-center flex-wrap'>
-                {profileData.skills.map((skill)=> <div>{skill}</div>)}
+                {profileData.skills.map((skill, index)=> <div key={index}>{skill}</div>)}
             </div>
         </div>}
         <div className='w-full lg:max-w-[900px] bg-white p-[10px] rounded-lg'>
@@ -116,7 +117,7 @@ function Profile() {
         <div className='w-full lg:max-w-[900px] bg-white p-[10px] rounded-lg'>
             <div className='font-semibold text-gray-500 mb-[20px]'> Experience</div>
             <div className='pl-[10px] flex flex-col gap-[10px] text-gray-500'>
-                {profileData.experience.map((exp)=> <div className='border-b-1 pb-[10px] border-gray-400'>
+                {profileData.experience.map((exp, index)=> <div key={index} className='border-b-1 pb-[10px] border-gray-400'>
                     <div>title : {exp.title}</div>
                     <div>company : {exp.company}</div>
                     <div>description : {exp.description}</div>

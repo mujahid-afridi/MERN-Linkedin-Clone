@@ -29,7 +29,6 @@ function UserContext({children}) {
         try{
             let result = await axios.get(serverURL+"/api/user/currentuser", {withCredentials : true})
             setUserData(result.data)
-            console.log("userdata = ", result.data)
         }
         catch(error){
             console.log("getCurrentUser error" , error)
@@ -51,7 +50,6 @@ function UserContext({children}) {
             }else{
                 setPosts((prevposts)=> [...prevposts, ...result.data])
             }
-            console.log("all posts = ",posts)
         }
         catch(error){
             setPosts([])

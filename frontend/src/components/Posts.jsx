@@ -30,10 +30,12 @@ function Posts({index, post}) {
     let [likes, setLikes] = useState(0)
 
     let [skip, setSkip] = useState(0)
-    let limit=3 // it's size should fix
+    const limit=3 
     let [comments, setComments] = useState([])
     let [loadMore, setLoadMore] = useState(false)
     let [totalComments, setTotalComments] = useState(0)  //how much total comments of this post
+
+    const videoRef = useRef(null)
 
     const handleLike = async(postId)=>{
         try{
@@ -80,10 +82,10 @@ function Posts({index, post}) {
             setTotalComments(result.data.totalComments)
             let newSkip = customSkip + limit
             setSkip(newSkip)
-            if(newSkip > result.data.totalComments){
-                setLoadMore(false)
-            }else{
+            if(newSkip < totalComments){
                 setLoadMore(true)
+            }else{
+                setLoadMore(false)
             }
         }
         catch(error){
@@ -96,7 +98,6 @@ function Posts({index, post}) {
         setLikes(post.likes.length)
 
         socket.on("likeUpdated", ({postId, likes})=>{
-            console.log("likes = ", likes)
             if(postId == post._id){
                 setLikes(likes.length)
             }
@@ -113,6 +114,45 @@ function Posts({index, post}) {
             socket.off("commentsUpdated")
         }
     }, [post._id])
+
+
+   useEffect(() => {
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      const currentVideo = videoRef.current;
+
+      if (!currentVideo) return;
+
+      if (entry.isIntersecting) {
+        // ✅ When this video is visible → pause all others
+        document.querySelectorAll("video").forEach((vid) => {
+          if (vid !== currentVideo) {
+            vid.pause();
+          }
+        });
+      } else {
+        // ❌ When this video goes out of view → pause it
+        currentVideo.pause();
+      }
+    },
+    {
+      threshold: 0.5, // 50% visible
+    }
+  );
+
+  const currentVideo = videoRef.current;
+
+  if (currentVideo) {
+    observer.observe(currentVideo);
+  }
+
+  return () => {
+    if (currentVideo) {
+      observer.unobserve(currentVideo);
+    }
+    observer.disconnect(); // ✅ important cleanup
+  };
+}, []);
 
   return <div className='w-full p-4 rounded-md bg-white flex flex-col'>
     <div className='flex flex-wrap justify-between items-start gap'>
@@ -148,6 +188,7 @@ function Posts({index, post}) {
             />
         ) : post.video ? (
             <video
+            ref={videoRef}
             src={post.video}
             className="w-full h-auto max-h-[300px] object-contain"
             controls
